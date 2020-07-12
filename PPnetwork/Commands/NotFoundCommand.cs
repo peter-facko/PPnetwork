@@ -2,7 +2,7 @@
 
 namespace PPnetwork
 {
-	public readonly struct NotFoundCommandArgument : ICommandArgument
+	readonly struct NotFoundCommandArgument : ICommandArgument
 	{
 		public readonly ReadOnlyMemory<char> Input;
 
