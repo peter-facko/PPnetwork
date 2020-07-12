@@ -75,7 +75,7 @@ namespace PPnetwork
 
 		public void Handle(BadArgumentCountCommandArgument argument)
 		{
-			Write($"bad argument count: {argument.Count}");
+			Write($"bad argument count: {argument.ArgumentCount}");
 		}
 
 		public void Handle(ExitCommandArgument _)
