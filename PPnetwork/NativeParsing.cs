@@ -65,6 +65,8 @@ namespace PPnetwork
 
 		/// <summary>
 		/// Creates a Span of tokens in the <paramref name="input"/>.
+		/// Modifies <paramref name="input"/>.
+		/// See the documentation for the definition of a token.
 		/// </summary>
 		/// <param name="input">The string to process.</param>
 		/// <returns>Tokens in the <paramref name="input"/>. Token is represented as a range of chars.</returns>

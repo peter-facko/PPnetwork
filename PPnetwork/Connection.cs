@@ -5,20 +5,35 @@ using System.Threading;
 
 namespace PPnetwork
 {
+	/// <summary>
+	/// Basic implementation of <see cref="IConnection"/>. All other <see cref="IConnection"/>s should inherit this class.
+	/// </summary>
+	/// <typeparam name="SpecificApplication"></typeparam>
+	/// <typeparam name="ApplicationConnection"></typeparam>
 	public abstract class Connection<SpecificApplication, ApplicationConnection> : IConnection,
 		IPacketHandler<EndPacket>
 
 		where SpecificApplication : IApplication
 		where ApplicationConnection : IConnection
 	{
+		/// <summary>
+		/// Parent application.
+		/// </summary>
 		public SpecificApplication Application { get; }
 		readonly TcpClient tcpClient;
+		/// <summary>
+		/// Stream that reads and writes packets into the connection.
+		/// </summary>
 		public IReaderWriter<IPacket> Stream { get; }
 		readonly Thread thread;
 		bool should_close = false;
 
 		static readonly IInvoker<IConnection, IPacket> Parser = new PacketParser<ApplicationConnection>();
 
+		/// <summary>
+		/// Constructs a connection with specified parent application and a connected <see cref="TcpClient"/>. Throws if <paramref name="tcpClient"/> is not connected.
+		/// </summary>
+		/// <exception cref="Exception"/>
 		protected Connection(SpecificApplication application, TcpClient tcpClient)
 		{
 			if (!tcpClient.Connected)
@@ -31,6 +46,9 @@ namespace PPnetwork
 			thread.Start();
 		}
 
+		/// <summary>
+		/// Forcibly closes the connection. Send an <see cref="EndPacket"/> first if you want to notify the other side.
+		/// </summary>
 		public void Close()
 		{
 			lock (this)
@@ -41,7 +59,10 @@ namespace PPnetwork
 			thread.Join();
 		}
 
-		public void Handle()
+		/// <summary>
+		/// Handles incoming packets.
+		/// </summary>
+		void Handle()
 		{
 			try
 			{
@@ -68,6 +89,10 @@ namespace PPnetwork
 			}
 		}
 
+		/// <summary>
+		/// Removes this connection from its parent application.
+		/// The connection should be closed before removing.
+		/// </summary>
 		void RemoveConnection()
 		{
 			Application.RemoveConnection(this);

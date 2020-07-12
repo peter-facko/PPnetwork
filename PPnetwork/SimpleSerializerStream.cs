@@ -9,6 +9,9 @@ namespace PPnetwork
 	public class SimpleSerializerEndOfStreamException : Exception
 	{ }
 
+	/// <summary>
+	/// Serializes objects into a <see cref="System.IO.Stream"/>.
+	/// </summary>
 	public class SimpleSerializerStream : IDisposable,
 		IReaderWriter<int>,
 		IReaderWriter<string>,

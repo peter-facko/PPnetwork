@@ -24,6 +24,9 @@ namespace PPnetwork
 		{}
 	}
 
+	/// <summary>
+	/// Static class containing methods for parsing text into different types.
+	/// </summary>
 	public static class Parsers
 	{
 		public static int ParsePort(ReadOnlyMemory<char> input)

@@ -3,6 +3,11 @@ using System.IO;
 
 namespace PPnetwork
 {
+	/// <summary>
+	/// <see cref="IReaderWriter{}"/> that serializes and deserializes <typeparamref name="T"/> with <typeparamref name="Formatter"/> into a <see cref="Stream"/>.
+	/// </summary>
+	/// <typeparam name="Formatter"><see cref="IFormatter"/> to serialize with.</typeparam>
+	/// <typeparam name="T">Type to serialize.</typeparam>
 	public class FormatterStream<Formatter, T> : IReaderWriter<T>
 		where Formatter : IFormatter, new()
 		where T : class

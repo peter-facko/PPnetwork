@@ -35,8 +35,8 @@ namespace PPnetwork
 		where Application : IApplication
 		where CommandArgument : ICommandArgument
 	{
-		public CommandDescriptor(int argumentCount = 0, int priority = 0)
-			: base(typeof(CommandArgument), argumentCount, priority)
+		public CommandDescriptor()
+			: base(typeof(CommandArgument), 0, 0)
 		{}
 	}
 }

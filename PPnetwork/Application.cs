@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace PPnetwork
 {
+	/// <summary>
+	/// Basic implementation of <see cref="IApplication"/>. All other <see cref="IApplication"/>s should inherit this class.
+	/// </summary>
+	/// <typeparam name="SpecificApplication"></typeparam>
 	public abstract class Application<SpecificApplication> : IApplication,
 		ICommandHandler<NotFoundCommandArgument>,
 		ICommandHandler<BadArgumentCountCommandArgument>,
@@ -10,33 +14,72 @@ namespace PPnetwork
 
 		where SpecificApplication : IApplication
 	{
+		/// <summary>
+		/// Writes to console.
+		/// </summary>
+		/// <param name="s"></param>
 		public void Write(string s)
 		{
 			Console.WriteLine(s);
 		}
+		/// <summary>
+		/// Reads a line from console.
+		/// </summary>
+		/// <returns></returns>
 		public string Read()
 		{
 			return Console.ReadLine()!;
 		}
 
+		/// <summary>
+		/// Writes to console if build in debug mode. Otherwise does nothing.
+		/// </summary>
+		/// <param name="s"></param>
 		public void WriteDebug(string s)
 		{
 #if DEBUG
 			Write(s);
 #endif
 		}
+		/// <summary>
+		/// All connections this application has.
+		/// </summary>
 		protected abstract IEnumerable<IConnection> Connections { get; }
+		/// <summary>
+		/// Removes all connections.
+		/// All connections have to be closed before the call.
+		/// </summary>
 		protected abstract void ClearConnections();
+		/// <summary>
+		/// Removes the <paramref name="connection"/>.
+		/// <paramref name="connection"/> must be closed.
+		/// </summary>
 		public abstract void RemoveConnection(IConnection connection);
 
-		static readonly IInvoker<IApplication, string> Parser = new CommandParser<SpecificApplication>();
-
+		/// <summary>
+		/// Handler after the exit command is entered and all connections are closed.
+		/// </summary>
 		protected abstract void HandleAfterExit();
+
+		/// <summary>
+		/// Handler for when <paramref name="connection"/> closes unexpectedly.
+		/// </summary>
 		public abstract void HandleAbruptConnectionClose(IConnection connection);
+
+		/// <summary>
+		/// Handler for when <paramref name="connection"/> closes after first sending an <see cref="EndPacket"/>.
+		/// </summary>
 		public abstract void HandleNormalConnectionClose(IConnection connection, string reason);
 
+		/// <summary>
+		/// Message to sent to the connections when exit command is entered.
+		/// </summary>
 		protected abstract string ExitMessage { get; }
 
+		/// <summary>
+		/// Closes all connections by sending an <see cref="EndPacket"/> and them forcibly closing.
+		/// </summary>
+		/// <param name="reason">Reason for closing the connections. This is sent in the packet.</param>
 		protected void CloseAllConnections(string reason)
 		{
 			foreach (var connection in Connections)
@@ -48,6 +91,11 @@ namespace PPnetwork
 			ClearConnections();
 		}
 
+		static readonly IInvoker<IApplication, string> Parser = new CommandParser<SpecificApplication>();
+
+		/// <summary>
+		/// Parses and handles commands from input.
+		/// </summary>
 		public void AcceptCommands()
 		{
 			string s;
@@ -83,6 +131,9 @@ namespace PPnetwork
 			throw new ExitCommandException();
 		}
 
+		/// <summary>
+		/// Handles invalid input.
+		/// </summary>
 		public abstract void Handle(NotFoundCommandArgument argument);
 	}
 }

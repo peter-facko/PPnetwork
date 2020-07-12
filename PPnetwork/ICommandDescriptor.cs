@@ -14,7 +14,7 @@ namespace PPnetwork
 			{
 				var argumentCountCompare = ArgumentCount.CompareTo(other.ArgumentCount);
 				if (argumentCountCompare == 0)
-					return Priority.CompareTo(other.Priority);
+					return -Priority.CompareTo(other.Priority);
 				else
 					return argumentCountCompare;
 			}
