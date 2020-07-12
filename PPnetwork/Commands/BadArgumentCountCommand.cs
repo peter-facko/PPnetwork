@@ -1,6 +1,6 @@
 ﻿namespace PPnetwork
 {
-	readonly struct BadArgumentCountCommandArgument : ICommandArgument
+	public readonly struct BadArgumentCountCommandArgument : ICommandArgument
 	{
 		public readonly int Count;
 

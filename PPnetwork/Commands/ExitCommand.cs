@@ -1,6 +1,6 @@
 ﻿namespace PPnetwork
 {
 	[Command("exit", CommandFlags.UniqueName)]
-	struct ExitCommandArgument : ICommandArgument
+	public struct ExitCommandArgument : ICommandArgument
 	{}
 }
