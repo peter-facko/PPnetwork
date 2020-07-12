@@ -1,12 +1,18 @@
 ﻿namespace PPnetwork
 {
+	/// <summary>
+	/// <see cref="ICommandArgument"/> representing a bad argument count in input. Used only internally by the library
+	/// </summary>
 	public readonly struct BadArgumentCountCommandArgument : ICommandArgument
 	{
-		public readonly int Count;
+		/// <summary>
+		/// The number of arguments passed in input.
+		/// </summary>
+		public readonly int ArgumentCount;
 
-		public BadArgumentCountCommandArgument(int count)
+		public BadArgumentCountCommandArgument(int argumentCount)
 		{
-			Count = count;
+			ArgumentCount = argumentCount;
 		}
 	}
 }
