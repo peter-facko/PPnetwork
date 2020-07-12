@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	class SimpleDictionary<Key, Value> : ISimpleDictionary<Key, Value>
 	where Value : class

@@ -1,4 +1,4 @@
-﻿namespace PPchatLibrary
+﻿namespace PPnetwork
 {
 	public interface IPacketHandler<Packet>
 		where Packet : IPacket

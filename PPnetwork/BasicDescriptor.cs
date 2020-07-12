@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	class BasicDescriptor<CallerType, ParameterType, TypeToScan> : IInvoker<CallerType, ParameterType>
 		where TypeToScan : CallerType

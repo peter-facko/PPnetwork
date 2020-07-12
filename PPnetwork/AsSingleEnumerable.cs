@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	public static class Extensions
     {

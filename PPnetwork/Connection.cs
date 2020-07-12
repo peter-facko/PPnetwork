@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	public abstract class Connection<SpecificApplication, ApplicationConnection> : IConnection,
 		IPacketHandler<EndPacket>

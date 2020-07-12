@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	class CommandDescriptor<Application> : BasicDescriptor<IApplication, ICommandArgument, Application>, ICommandDescriptor
 		where Application : IApplication

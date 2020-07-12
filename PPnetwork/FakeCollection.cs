@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	class FakeCollection<T> : ISimpleCollection<T>
 	{

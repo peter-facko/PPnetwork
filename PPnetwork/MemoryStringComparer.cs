@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	public class MemoryStringComparer : IComparer<ReadOnlyMemory<char>>
 	{

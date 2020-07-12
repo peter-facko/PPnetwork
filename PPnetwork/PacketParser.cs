@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	class PacketParser<Connection> : IParser<IConnection, IPacket, IPacket>
 		where Connection : IConnection

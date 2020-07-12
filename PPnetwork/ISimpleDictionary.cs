@@ -1,4 +1,4 @@
-﻿namespace PPchatLibrary
+﻿namespace PPnetwork
 {
 	interface ISimpleDictionary<Key, Value> : ISimpleReadonlyDictionary<Key, Value>
 		where Value : class

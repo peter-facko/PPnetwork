@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	class ExitCommandException : Exception
 	{}

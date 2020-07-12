@@ -2,7 +2,7 @@
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	public static class NativeParsing
 	{
@@ -26,9 +26,6 @@ namespace PPchatLibrary
 			public static implicit operator Span<T>(MySpan<T> s) => s.AsSpan();
 			public static implicit operator ReadOnlySpan<T>(MySpan<T> s) => (Span<T>)s;
 		}
-
-		[DllImport("PPchatParsing.dll")]
-		static extern MySpan<MySpan<char>> GetTokensRangeImplementation(MySpan<char> input);
 
 		public static unsafe Span<MySpan<char>> GetTokensRange(string input)
 		{
@@ -70,7 +67,10 @@ namespace PPchatLibrary
 			return arr;
 		}
 
-		[DllImport("PPchatParsing.dll")]
+		[DllImport("PPparsing.dll")]
 		public static extern void ReleaseResources();
+
+		[DllImport("PPparsing.dll")]
+		static extern MySpan<MySpan<char>> GetTokensRangeImplementation(MySpan<char> input);
 	}
 }

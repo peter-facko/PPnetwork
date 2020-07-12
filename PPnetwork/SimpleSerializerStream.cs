@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Net;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	public class SimpleSerializerEndOfStreamException : Exception
 	{ }

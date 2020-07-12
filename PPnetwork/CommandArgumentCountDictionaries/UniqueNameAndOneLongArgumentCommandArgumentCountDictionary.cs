@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	class UniqueNameAndOneLongArgumentCommandArgumentCountDictionary : UniqueNameCommandArgumentCountDictionary
 	{

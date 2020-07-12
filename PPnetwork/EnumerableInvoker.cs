@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	class EnumerableInvoker<Caller, Parameter> : IInvoker<Caller, Parameter>
 	{

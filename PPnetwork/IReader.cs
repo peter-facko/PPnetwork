@@ -1,4 +1,4 @@
-﻿namespace PPchatLibrary
+﻿namespace PPnetwork
 {
 	public interface IReader<out T>
 	{

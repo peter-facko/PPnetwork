@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	abstract class BasicSniffer<Key, Value, TypeToScan> : SimpleDictionary<Key, Value>
 		where Value : class

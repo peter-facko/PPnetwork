@@ -1,7 +1,7 @@
 ﻿using System.Runtime.Serialization;
 using System.IO;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	public class FormatterStream<Formatter, T> : IReaderWriter<T>
 		where Formatter : IFormatter, new()

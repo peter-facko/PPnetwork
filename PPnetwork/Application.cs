@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	public abstract class Application<SpecificApplication> : IApplication,
 		ICommandHandler<NotFoundCommandArgument>,

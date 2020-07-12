@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	public readonly struct NotFoundCommandArgument : ICommandArgument
 	{

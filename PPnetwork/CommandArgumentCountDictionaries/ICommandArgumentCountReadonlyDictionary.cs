@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	interface ICommandArgumentCountReadonlyDictionary : ISimpleReadonlyDictionary<int, IEnumerable<ICommandDescriptor>>
 	{

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	class PacketsSniffer<Connection> : BasicSniffer<Type, IInvoker<IConnection, IPacket>, Connection>
 		where Connection : IConnection

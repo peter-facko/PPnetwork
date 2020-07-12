@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	class BasicCommandArgumentCountDictionary :
 		SimpleDictionary<Dictionary<int, ISimpleCollection<ICommandDescriptor>>, int, ISimpleCollection<ICommandDescriptor>>,

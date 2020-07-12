@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	class CommandsSniffer<Application> : BasicSniffer<ReadOnlyMemory<char>, ICommandArgumentCountDictionary, Application>, ICommandsSniffer
 		where Application : IApplication

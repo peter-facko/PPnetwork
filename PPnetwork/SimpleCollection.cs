@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	class SimpleCollection<Collection, T> : ISimpleCollection<T>
 		where Collection : ICollection<T>, new()

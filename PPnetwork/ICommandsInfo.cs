@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	interface ICommandsSniffer : ISimpleReadonlyDictionary<ReadOnlyMemory<char>, ICommandArgumentCountReadonlyDictionary>
 	{

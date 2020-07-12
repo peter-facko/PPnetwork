@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	interface ICommandDescriptor : IInvoker<IApplication, object[]?>, IComparable<ICommandDescriptor>
 	{

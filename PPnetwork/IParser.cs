@@ -1,4 +1,4 @@
-﻿namespace PPchatLibrary
+﻿namespace PPnetwork
 {
 	interface IParser<Caller, Input, Parameter> : IInvoker<Caller, Input>
 	{

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	[Serializable]
 	public readonly struct EndPacket : IPacket

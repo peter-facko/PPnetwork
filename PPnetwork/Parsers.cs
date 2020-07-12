@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System;
 
-namespace PPchatLibrary
+namespace PPnetwork
 {
 	class PortOutOfRangeParseException : ParseException
 	{
