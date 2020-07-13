@@ -71,7 +71,7 @@ class MyApplication : Application<MyApplication>
 
 	public override void Handle(NotFoundCommandArgument argument)
 	{
-		Write($"{argument.Input} was entered, but this is not recognised as a command by the parser");
+		Write($"{argument.Input} was entered, but this is not recognised as a command");
 	}
 
 	public override void RemoveConnection(IConnection connection)
