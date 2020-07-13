@@ -2,8 +2,7 @@
 {
 	/// <summary>
 	/// Basic interface for a PPnetwork application.
-	/// It can read and write <see cref="string"/>, remove a connection
-	/// and handle an <see cref="IConnection"/> closing either normally or unexpectedly.
+	/// It can read and write <see cref="string"/> and remove a connection
 	/// </summary>
 	public interface IApplication : IReaderWriter<string>
 	{

@@ -42,9 +42,11 @@ Each Command must also have a way in which arguments are parsed from text
 and a corresponding handler in the Application,
 which specifies the behaviour after the command is entered.
 
+#### Exit Command
+
 Each Application handles an "exit" Command by default.
-This command has no arguments and first closes all Connections
-and then the Application.
+This command has no arguments and first closes all Connections by sending an [`EndPacket`](#EndPacket)
+and then closes the Application.
 
 See [Command Parsing](#Command-Parsing) and [Adding a command](#Adding-a-command)
 for more code oriented explanations.
@@ -63,7 +65,52 @@ This library uses TCP to handle networking.
 
 A chunk of data representing a single message sent through a [Connection](#Connection).
 
+#### EndPacket
+
+There is one default Packet defined in the library, called `EndPacket`.
+This Packet signals that the sender wishes to end the [Connection](#Connection).
+It accepts "reason" string as an argument.
+
+The `EndPacket` is used internally by the library
+and it's handling on receiving cannot be modified.
+However, Connections can send an `EndPacket`.
+The other Connection will close it's end of the channel after receiving an `EndPacket`,
+so the only valid action after sending an `EndPacket` is to close the Connection.
+
 ## Code model
+
+### interface IWriter\<T>
+
+```csharp
+interface IWriter<in T>
+{
+	void Write(T t);
+}
+```
+
+### interface IReader\<T>
+
+```csharp
+interface IReader<out T>
+{
+	T Read();
+}
+```
+
+### interface IApplication
+
+This is the interface for all [Applications](#Application).
+
+Not intended for direct implementation, use `Application<>`
+as the base class for your Application.
+
+```csharp
+interface IApplication : IReaderWriter<string>
+{
+	// clears the reference to the Connection
+	void RemoveConnection(IConnection connection);
+}
+```
 
 ### abstract class Application\<SpecificApplication>
 
@@ -116,6 +163,29 @@ abstract class Application<SpecificApplication> : IApplication
 
 When inheriting this generic class, the type argument must be the derived class.
 
+#### Example
+
+```csharp
+class MyApplication : Application<MyApplication>
+{
+	// ...
+}
+```
+
+### interface IConnection
+
+This is the interface for all Connections.
+Don't implement this directly, use the abstract generic class `Connection<,>`.
+
+```csharp
+interface IConnection
+{
+	IReaderWriter<IPacket> Stream { get; }
+
+	void Close();
+}
+```
+
 ### abstract class Connection<SpecificApplication, ApplicationConnection>
 
 This is the base class for any Connection.
@@ -123,7 +193,9 @@ This is the base class for any Connection.
 It has the following synopsis:
 
 ```csharp
-abstract class Connection<SpecificApplication, ApplicationConnection>
+abstract class Connection<SpecificApplication, ApplicationConnection> : IConnection
+	where SpecificApplication : IApplication
+	where ApplicationConnection : IConnection
 {
 	// parent Application
 	public SpecificApplication Application { get; }
@@ -134,7 +206,7 @@ abstract class Connection<SpecificApplication, ApplicationConnection>
 	// creates a connection from a parent Application and a connected TcpClient
 	protected Connection(SpecificApplication application, TcpClient tcpClient);
 
-	// closes the Connection forcibly
+	// forcibly closes the Connection
 	public void Close();
 
 
@@ -145,6 +217,33 @@ abstract class Connection<SpecificApplication, ApplicationConnection>
 	// handler for when the opposite side of the connection sent an EndPacket
 	public abstract void HandleNormalConnectionClose(string reason);
 }
+```
+
+When deriving this class, the generic type `SpecificApplication`
+should be the type of the parent Application of your Connection
+and `ApplicationConnection` should be the type of your Connection.
+
+#### Example
+
+```csharp
+class MyApplication : Application<MyApplication>
+{
+	// ...
+}
+
+class MyConnection : Connection<MyApplication, MyConnection>
+{
+	// ...
+}
+```
+
+### interface IPacket
+
+This is the interface all [Packets](#Packet) should implement.
+
+```csharp
+interface IPacket
+{}
 ```
 
 ## Usage
