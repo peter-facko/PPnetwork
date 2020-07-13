@@ -15,17 +15,17 @@ namespace PPnetwork
 		where SpecificApplication : IApplication
 	{
 		/// <summary>
-		/// Writes to console.
+		/// Writes a line to the console.
 		/// </summary>
-		/// <param name="s"></param>
-		public void Write(string s)
+		/// <param name="line">The line to write.</param>
+		public void Write(string line)
 		{
-			Console.WriteLine(s);
+			Console.WriteLine(line);
 		}
 		/// <summary>
-		/// Reads a line from console.
+		/// Reads a line from the console.
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>A line from the console</returns>
 		public string Read()
 		{
 			return Console.ReadLine()!;
@@ -35,10 +35,10 @@ namespace PPnetwork
 		/// Writes to console if build in debug mode. Otherwise does nothing.
 		/// </summary>
 		/// <param name="s"></param>
-		public void WriteDebug(string s)
+		public void WriteDebug(string line)
 		{
 #if DEBUG
-			Write(s);
+			Write(line);
 #endif
 		}
 		/// <summary>

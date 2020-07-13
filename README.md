@@ -10,7 +10,7 @@ and have network connections between themselves.
 
 It uses reflection to make adding new [Commands](#Command) and [Packets](#Packet) as simple as possible.
 
-## Main idea structure
+## Conceptual model
 
 Many terms used in this part of the documentation as a name of a concept specific to the project
 have also a regular meaning,
@@ -27,16 +27,27 @@ It has two main characteristics:
 
 ### Command
 
-Command is a command to the [Application](#Application) entered through console, which has:
+Command is a command to the [Application](#Application) entered through the console.
+
+It is uniquely identified by:
 
 1) name
 2) any number of arguments
-3) a way in which arguments are parsed from text
-4) priority
+3) priority
 
-Each two Commands must differ in at least one of: name, argument count, priority.
+No two Commands can share all of these three properties,
+because such Commands would be treated as equal by the parser.
 
-For more information see [Command Parsing](#Command-Parsing).
+Each Command must also have a way in which arguments are parsed from text
+and a corresponding handler in the Application,
+which specifies the behaviour after the command is entered.
+
+Each Application handles an "exit" Command by default.
+This command has no arguments and first closes all Connections
+and then the Application.
+
+See [Command Parsing](#Command-Parsing) and [Adding a command](#Adding-a-command)
+for more code oriented explanations.
 
 ### Connection
 
@@ -52,16 +63,103 @@ This library uses TCP to handle networking.
 
 A chunk of data representing a single message sent through a [Connection](#Connection).
 
+## Code model
+
+### abstract class Application\<SpecificApplication>
+
+This is the base class for any Application.
+
+It has the following synopsis:
+
+```csharp
+abstract class Application<SpecificApplication> : IApplication
+	where SpecificApplication : IApplication
+{
+	// writes a line to the console
+	public void Write(string line);
+
+	// reads a line from the console
+	public string Read();
+
+	// writes a line if in debug mode, otherwise does nothing
+	public void WriteDebug(string s);
+
+	// closes all Connections by sending an EndPacket
+	protected void CloseAllConnections(string reason);
+
+	// the main loop, in which the Application accepts commands
+	public void AcceptCommands();
+
+
+
+	// handler for after the exit command
+	// the default implementation does nothing
+	protected virtual void HandleAfterExit();
+
+
+
+	// gets the Connections handled by this Application
+	protected abstract IEnumerable<IConnection> Connections { get; }
+
+	// clears the references to all Connections
+	protected abstract void ClearConnections();
+
+	// clears a reference to the specific Connection
+	public abstract void RemoveConnection(IConnection connection);
+
+	// message to print after the exit command
+	protected abstract string ExitMessage { get; }
+
+	// handler for unrecognised input
+	public abstract void Handle(NotFoundCommandArgument argument);
+```
+
+When inheriting this generic class, the type argument must be the derived class.
+
+### abstract class Connection<SpecificApplication, ApplicationConnection>
+
+This is the base class for any Connection.
+
+It has the following synopsis:
+
+```csharp
+abstract class Connection<SpecificApplication, ApplicationConnection>
+{
+	// parent Application
+	public SpecificApplication Application { get; }
+
+	// stream which can read and write Packets
+	public IReaderWriter<IPacket> Stream { get; }
+
+	// creates a connection from a parent Application and a connected TcpClient
+	protected Connection(SpecificApplication application, TcpClient tcpClient);
+
+	// closes the Connection forcibly
+	public void Close();
+
+
+
+	// handler for when the opposite side of the connection closes the connection abruptly
+	public abstract void HandleAbruptConnectionClose();
+
+	// handler for when the opposite side of the connection sent an EndPacket
+	public abstract void HandleNormalConnectionClose(string reason);
+}
+```
+
 ## Usage
 
 ### Application
 
-A bare bone implementation of an [Application](#Application) with no connections might look like this:
+#### Basic implementation
+
+A bare bone implementation of an [Application](#Application) with no connections
+might look like this:
 
 ```csharp
-using PPnetwork;
 using System.Collections.Generic;
 using System.Linq;
+using PPnetwork;
 
 class MyApplication : Application<MyApplication>
 {
@@ -82,9 +180,30 @@ class MyApplication : Application<MyApplication>
 }
 ```
 
+#### Running the Application
+
+With your implementation of an Application,
+you can create and run your Application in the `Main` function.
+
+```csharp
+using PPnetwork;
+
+static void Main(string[] _)
+{
+	NativeParsing.SetEncoding();
+
+	var app = new MyApplication();
+	app.AcceptCommands();
+}
+```
+
+This library only works with ASCII encoding, so to ensure this,
+call `NativeParsing.SetEncoding()` before running your Application.
+
 #### Adding a command
 
-In this example we'll add a command which adds two integers and prints the result.
+In this example we'll add a command to our Application
+which accepts two integers as arguments and prints their sum.
 
 This example doesn't do anything with networking purposefully
 to show only things related to commands.
@@ -117,9 +236,8 @@ public readonly struct AddCommandArgument : ICommandArgument
 ```
 
 You will also need to add a `CommandAttribute` to your Command argument.\
-There you need to specify a name for the command and optimization flags or a priority.
-For more information about these flags and priority see [this](#Command) part of the guide
-or the comments in the code.
+There you need to specify a name for the command and flags or a priority.
+For more information about these flags and priority see [this](#Command) part of the guide.
 
 It is good practice to declare these Command arguments as readonly,
 since they are just packages of values passed to your handler in the Application.
