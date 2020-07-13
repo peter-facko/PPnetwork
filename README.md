@@ -27,7 +27,7 @@ It has two main characteristics:
 
 ### Command
 
-A command to the [Application](#Application) entered through console, which has:
+Command is a command to the [Application](#Application) entered through console, which has:
 
 1) name
 2) any number of arguments
