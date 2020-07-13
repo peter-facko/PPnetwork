@@ -52,70 +52,6 @@ This library uses TCP to handle networking.
 
 A chunk of data representing a single message sent through a [Connection](#Connection).
 
-## Command Parsing
-
-When user of your application enters a line of text into the console,
-this line is treated as a sequence of tokens by the parser.
-
-The first of these tokens is treated as the [Command](#Command) name, the rest are command arguments.
-
-The parser will find all commands with the entered name and argument count.
-
-If there is no Command with such name, `Handle(NotFoundCommandArgument)` is invoked in your Application.
-
-If there is a Command with such name but none has the entered number of arguments,
-an error with the entered argument count is printed.
-
-If there are some Commands with the right name and argument count,
-they are invoked in desceding order by their priority until
-a Command that doesn't cause an exception is found.\
-If there is no such Command, the last exception thrown propagates out of the parser.
-
-### Raw Token
-
-A contiguous subsequence of characters from the input containing no spaces not enclosed in quotes.
-
-### Token
-
-A raw token with removed quotes.
-
-### Formats
-
-Here '_' will mean a space character ' ' and 'A' will mean *not* a space character.
-
-#### Input Format
-
-input is:
-
-_*
-
-or 
-
-\_\*(raw_token)_*
-
-or
-
-\_\*(raw_token)_+(input)
-
-#### Raw Token Formats
-
-raw_token is:
-
-A*
-
-or
-
-A*".*"(raw_token)
-
-or
-
-A*".*
-
-### Example
-
-The input ' a ab" "c ' has tokens:\
-'a', 'ab c'
-
 ## Usage
 
 ### Application
@@ -182,7 +118,8 @@ public readonly struct AddCommandArgument : ICommandArgument
 
 You will also need to add a `CommandAttribute` to your Command argument.\
 There you need to specify a name for the command and optimization flags or a priority.
-For more information about these flags and priority see [this](#Command) part of the guide or the comments in the code.
+For more information about these flags and priority see [this](#Command) part of the guide
+or the comments in the code.
 
 It is good practice to declare these Command arguments as readonly,
 since they are just packages of values passed to your handler in the Application.
@@ -228,9 +165,177 @@ $ add 15 20
 
 ### Connection
 
+A bare bone implementation of a [Connection](#Connection) that is maintained by `MyApplication`
+might look like this:
 
+```csharp
+using PPnetwork;
+using System.Net.Sockets;
 
-## Example
+class MyConnection : Connection<MyApplication, MyConnection>
+{
+	public MyConnection(MyApplication parent, TcpClient client)
+		: base(parent, client)
+	{ }
+
+	public override void HandleAbruptConnectionClose()
+	{
+		Application.Write("the other side closed the connection abruptly");
+	}
+
+	public override void HandleNormalConnectionClose(string reason)
+	{
+		Application.Write($"the other side closed the connection because: {reason}");
+	}
+}
+```
+
+It is assumed that the Connection will be created by it's parent [Application](#Application),
+so the connected `TcpClient` is passed in the constructor.
+
+#### Adding a packet
+
+In this example we'll add a simple packet carrying a string message.
+
+##### Creating the packet
+
+First, you need to create the type holding the information
+you intend to send through the [Connection](#Connection).
+
+```csharp
+using System;
+using PPnetwork;
+
+[Serializable]
+public readonly struct MessagePacket : IPacket
+{
+	public readonly string Message;
+
+	public MessagePacket(string message)
+	{
+		Message = message;
+	}
+}
+```
+
+You need to mark it as `Serializable`.
+
+It is also good practice to make it readonly, similarly as with [Commands](#Command).
+
+##### Adding a handler
+
+Secondly, you need to provide a method that handles you new incoming [Packet](#Packet).\
+This is handled in the [Connection](#Connection) that receives it.
+
+To do this, you need to implement `IPacketHandler<YourPacket>` in your Connection,
+where `YourPacket` is your newly created [Packet](#Packet).
+
+```csharp
+// ...
+class MyConnection : Connection<MyApplication, MyConnection>,
+	IPacketHandler<MessagePacket>
+{
+	// ...
+	public void Handle(MessagePacket packet)
+	{
+		Application.Write($"this message was received: {packet.Message}");
+	}
+}
+```
+
+## Command Parsing
+
+When user of your application enters a line of text into the console,
+this line is treated as a sequence of [tokens](#Token) by the parser.
+
+The first of these tokens is treated as the [Command](#Command) name, the rest are command arguments.
+
+The parser will find all commands with the entered name and argument count.
+
+If there is no Command with such name,
+`Handle(NotFoundCommandArgument)` is invoked in your [Application](#Application).\
+If your Application is implemented like this:
+
+```csharp
+// ...
+class MyApplication : Application<MyApplication>
+{
+	// ...
+	public override void Handle(NotFoundCommandArgument argument)
+	{
+		Write($"{argument.Input} wasn't recognised");
+	}
+}
+```
+
+and no command has name `x`, then:
+
+```
+$ x example
+x example wasn't recognised
+```
+
+If there is a Command with such name but none has the entered number of arguments,
+an error with the entered argument count is printed.\
+For example, if there is one command with name `x` and it has argument count 2:
+
+```
+$ x example
+bad argument count: 1
+```
+
+If there are some Commands with the right name and argument count,
+they are invoked in descending order by their priority until
+a Command that doesn't cause an exception is found.\
+If there is no such Command, the last exception thrown propagates out of the parser.
+
+### Raw Token
+
+A contiguous subsequence of characters from the input containing no spaces not enclosed in quotes.
+
+### Token
+
+A [raw token](#Raw-Token) with removed quotes.
+
+### Formats
+
+Here, '_' will mean a space character ' ' and 'A' will mean *not* a space character.\
+Expressions are in paretheses.
+
+#### Input Format
+
+input is:
+
+_*
+
+or 
+
+\_\*(raw_token)_*
+
+or
+
+\_\*(raw_token)_+(input)
+
+#### Raw Token Formats
+
+raw_token is:
+
+A*
+
+or
+
+A*".*"(raw_token)
+
+or
+
+A*".*
+
+### Example
+
+The input ' a ab" "c ' has tokens:\
+'a', 'ab c'
+
+## Demo project
 
 [PPchat](https://github.com/Petkr/PPchat) is a demo client-server project showcasing
 how to use this library.
