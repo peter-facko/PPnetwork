@@ -71,7 +71,7 @@ namespace PPnetwork
 			}
 			catch (EndException e)
 			{
-				Application.HandleNormalConnectionClose(this, e.Reason);
+				HandleNormalConnectionClose(e.Reason);
 				RemoveConnection();
 			}
 			catch
@@ -83,7 +83,7 @@ namespace PPnetwork
 				}
 				if (!sc)
 				{
-					Application.HandleAbruptConnectionClose(this);
+					HandleAbruptConnectionClose();
 					RemoveConnection();
 				}
 			}
@@ -97,6 +97,16 @@ namespace PPnetwork
 		{
 			Application.RemoveConnection(this);
 		}
+
+		/// <summary>
+		/// Handler for when a connection closes unexpectedly.
+		/// </summary>
+		public abstract void HandleAbruptConnectionClose();
+
+		/// <summary>
+		/// Handler for when a connection closes after first sending an <see cref="EndPacket"/>.
+		/// </summary>
+		public abstract void HandleNormalConnectionClose(string reason);
 
 		public void Handle(EndPacket packet)
 		{

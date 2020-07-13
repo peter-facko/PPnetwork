@@ -59,17 +59,8 @@ namespace PPnetwork
 		/// <summary>
 		/// Handler after the exit command is entered and all connections are closed.
 		/// </summary>
-		protected abstract void HandleAfterExit();
-
-		/// <summary>
-		/// Handler for when <paramref name="connection"/> closes unexpectedly.
-		/// </summary>
-		public abstract void HandleAbruptConnectionClose(IConnection connection);
-
-		/// <summary>
-		/// Handler for when <paramref name="connection"/> closes after first sending an <see cref="EndPacket"/>.
-		/// </summary>
-		public abstract void HandleNormalConnectionClose(IConnection connection, string reason);
+		protected virtual void HandleAfterExit()
+		{ }
 
 		/// <summary>
 		/// Message to sent to the connections when exit command is entered.
