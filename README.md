@@ -530,6 +530,20 @@ class MyConnection : Connection<MyApplication, MyConnection>,
 }
 ```
 
+### SimpleSerializerStream
+
+The library also offers a class for serialization of some types to Streams.
+
+The SimpleSerializerStream supports reading and writing these types to a Stream:
+* `int`
+* `string`
+* `IPAddress`
+
+Additionally it supports reading a `Memory<char>` and writing a `ReadOnlyMemory<char>`.
+
+This class is not used inside the library and is intended to ease serializing data
+from Application (e.g. a server stores an index of usernames on disk).
+
 ## Command Parsing
 
 When user of your application enters a line of text into the console,
