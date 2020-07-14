@@ -374,7 +374,7 @@ Also note that while only being optimizations, the parser relies on them,
 so don't set a flag which is not true for the Command
 (i.e. unique name when there are two Commands with such name).
 
-One flag that also changes parsing is `CommandFlags.OneLongArgument`,
+The one flag that also changes the behavior is `CommandFlags.OneLongArgument`,
 which makes the Command accept one argument
 but also changes the parsing of it's arguments. For more information see
 [Command Parsing](#Command-Parsing).
