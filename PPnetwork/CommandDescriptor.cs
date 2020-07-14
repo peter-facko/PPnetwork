@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace PPnetwork
 {
-	class CommandDescriptor<Application> : BasicDescriptor<IApplication, ICommandArgument, Application>, ICommandDescriptor
+	class CommandDescriptor<Application> : Descriptor<IApplication, ICommandArgument, Application>, ICommandDescriptor
 		where Application : IApplication
 	{
 		readonly Type CommandArgumentType;

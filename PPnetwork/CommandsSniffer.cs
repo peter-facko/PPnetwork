@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace PPnetwork
 {
-	class CommandsSniffer<Application> : BasicSniffer<ReadOnlyMemory<char>, ICommandArgumentCountDictionary, Application>, ICommandsSniffer
+	class CommandsSniffer<Application> : Sniffer<ReadOnlyMemory<char>, ICommandArgumentCountDictionary, Application>, ICommandsSniffer
 		where Application : IApplication
 	{
 		public ICommandDescriptor NotFoundCommand { get; }
@@ -17,15 +17,15 @@ namespace PPnetwork
 			BadArgumentCountCommand = new CommandDescriptor<Application, BadArgumentCountCommandArgument>();
 		}
 
-		protected override void Handle(Type commandArgumentType)
+		protected override void Handle(Type orderType)
 		{
-			if (commandArgumentType == typeof(NotFoundCommandArgument) ||
-				commandArgumentType == typeof(BadArgumentCountCommandArgument))
+			if (orderType == typeof(NotFoundCommandArgument) ||
+				orderType == typeof(BadArgumentCountCommandArgument))
 				return;
 
-			var attribute = commandArgumentType.GetCustomAttribute<CommandAttribute>()!;
-			var argumentCount = attribute.HasOneLongArgument ? 0 : commandArgumentType.GetFields().Length;
-			var command = new CommandDescriptor<Application>(commandArgumentType, argumentCount, attribute.Priority);
+			var attribute = orderType.GetCustomAttribute<CommandAttribute>()!;
+			var argumentCount = attribute.HasOneLongArgument ? 0 : orderType.GetFields().Length;
+			var command = new CommandDescriptor<Application>(orderType, argumentCount, attribute.Priority);
 
 			if (attribute.HasUniqueName)
 			{

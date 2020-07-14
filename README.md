@@ -3,14 +3,14 @@
 
 A school software project.
 
-## Basic info
+## Basic Info
 
 This library is a basic framework for applications which accept commands from console
 and have network connections between themselves.
 
 It uses reflection to make adding new [Commands](#Command) and [Packets](#Packet) as simple as possible.
 
-## Conceptual model
+## Conceptual Model
 
 Many terms used in this part of the documentation as a name of a concept specific to the project
 have also a regular meaning,
@@ -57,6 +57,8 @@ Represents a communication channel between two [Applications](#Application).
 
 Connection can send and receive a [Packet](#Packet).
 
+The Application that handles a particular Connection is called its parent Application.
+
 Each Connection handles incoming Packets.
 
 This library uses TCP to handle networking.
@@ -77,7 +79,7 @@ However, Connections can send an `EndPacket`.
 The other Connection will close it's end of the channel after receiving an `EndPacket`,
 so the only valid action after sending an `EndPacket` is to close the Connection.
 
-## Code model
+## Code Model
 
 ### interface IWriter\<T>
 
@@ -101,7 +103,8 @@ interface IReader<out T>
 
 This is the interface for all [Applications](#Application).
 
-Not intended for direct implementation, use `Application<>`
+Not intended for direct implementation, use
+[`Application<>`](#abstract-class-applicationspecificapplication)
 as the base class for your Application.
 
 ```csharp
@@ -114,7 +117,7 @@ interface IApplication : IReaderWriter<string>
 
 ### abstract class Application\<SpecificApplication>
 
-This is the base class for any Application.
+This is the base class for any [Application](#Application).
 
 It has the following synopsis:
 
@@ -131,11 +134,11 @@ abstract class Application<SpecificApplication> : IApplication
 	// writes a line if in debug mode, otherwise does nothing
 	public void WriteDebug(string s);
 
-	// closes all Connections by sending an EndPacket
-	protected void CloseAllConnections(string reason);
-
 	// the main loop, in which the Application accepts commands
 	public void AcceptCommands();
+
+	// closes all Connections by sending an EndPacket
+	protected void CloseAllConnections(string reason);
 
 
 
@@ -145,23 +148,24 @@ abstract class Application<SpecificApplication> : IApplication
 
 
 
+	// clears a reference to the specific Connection
+	public abstract void RemoveConnection(IConnection connection);
+
+	// handler for unrecognised input
+	public abstract void Handle(NotFoundCommandArgument argument);
+
 	// gets the Connections handled by this Application
 	protected abstract IEnumerable<IConnection> Connections { get; }
 
 	// clears the references to all Connections
 	protected abstract void ClearConnections();
 
-	// clears a reference to the specific Connection
-	public abstract void RemoveConnection(IConnection connection);
-
 	// message to print after the exit command
 	protected abstract string ExitMessage { get; }
-
-	// handler for unrecognised input
-	public abstract void Handle(NotFoundCommandArgument argument);
 ```
 
-When inheriting this generic class, the type argument must be the derived class.
+When inheriting this generic class in your Application implementation,
+the type argument must be the derived class.
 
 #### Example
 
@@ -174,8 +178,10 @@ class MyApplication : Application<MyApplication>
 
 ### interface IConnection
 
-This is the interface for all Connections.
-Don't implement this directly, use the abstract generic class `Connection<,>`.
+This is the interface for all [Connections](#Connection).
+
+Don't implement this directly, use the abstract generic class
+[`Connection<,>`](#abstract-class-connectionspecificapplication-applicationconnection).
 
 ```csharp
 interface IConnection
@@ -188,7 +194,7 @@ interface IConnection
 
 ### abstract class Connection<SpecificApplication, ApplicationConnection>
 
-This is the base class for any Connection.
+This is the base class for any [Connection](#Connection).
 
 It has the following synopsis:
 
@@ -203,11 +209,11 @@ abstract class Connection<SpecificApplication, ApplicationConnection> : IConnect
 	// stream which can read and write Packets
 	public IReaderWriter<IPacket> Stream { get; }
 
-	// creates a connection from a parent Application and a connected TcpClient
-	protected Connection(SpecificApplication application, TcpClient tcpClient);
-
 	// forcibly closes the Connection
 	public void Close();
+
+	// creates a connection from a parent Application and a connected TcpClient
+	protected Connection(SpecificApplication application, TcpClient tcpClient);
 
 
 
@@ -220,7 +226,7 @@ abstract class Connection<SpecificApplication, ApplicationConnection> : IConnect
 ```
 
 When deriving this class, the generic type `SpecificApplication`
-should be the type of the parent Application of your Connection
+should be the type of the parent [Application](#Application) of your Connection
 and `ApplicationConnection` should be the type of your Connection.
 
 #### Example
@@ -250,7 +256,7 @@ interface IPacket
 
 ### Application
 
-#### Basic implementation
+#### Basic Implementation
 
 A bare bone implementation of an [Application](#Application) with no connections
 might look like this:
@@ -299,15 +305,15 @@ static void Main(string[] _)
 This library only works with ASCII encoding, so to ensure this,
 call `NativeParsing.SetEncoding()` before running your Application.
 
-#### Adding a command
+#### Adding a Command
 
-In this example we'll add a command to our Application
+In this example we'll add a [Command](#Command) to our Application
 which accepts two integers as arguments and prints their sum.
 
 This example doesn't do anything with networking purposefully
 to show only things related to commands.
 
-##### Creating the Command argument
+##### Creating the Command Argument
 
 First you need to create a type that will hold the arguments.\
 This type must inherit `ICommandArgument`. It is an empty interface in this state of the library.
@@ -336,22 +342,64 @@ public readonly struct AddCommandArgument : ICommandArgument
 
 You will also need to add a `CommandAttribute` to your Command argument.\
 There you need to specify a name for the command and flags or a priority.
-For more information about these flags and priority see [this](#Command) part of the guide.
+For more information about these flags and priority see the next part of the guide.
 
 It is good practice to declare these Command arguments as readonly,
 since they are just packages of values passed to your handler in the Application.
 
 The parser assumes that you can create an instance of your Command argument
-with N ReadOnlyMemory\<char>s as arguments,
+with N `ReadOnlyMemory<char>`s as arguments,
 where N is the number of fields in the argument type.
 
-In the constructor you need to provide a way to parse the ReadOnlyMemory\<char>s
+In the constructor you need to provide a way to parse the `ReadOnlyMemory<char>`s
 representing the text arguments from the console to your fields.
 
 If you want to signal a parsing error (argument has invalid format)
-throw a `ParseException`, or a derived class.
+throw a `ParseException`, or its derived class.
 
-##### Providing a handler in the Application
+##### CommandAttribute
+
+When creating a Command, you must add the attribute `CommandAttribute` to your class.
+
+The first parameter is the name of your Command.
+
+The second can be:
+* Command Flags
+* Priority
+
+###### Command Flags
+
+Command Flags are mostly optimization only flags, but one flag does change the behavior of the Command.\
+Also note that while only being optimizations, the parser relies on them,
+so don't set a flag which is not true for the Command
+(i.e. unique name when there are two Commands with such name).
+
+One flag that also changes parsing is `CommandFlags.OneLongArgument`,
+which makes the Command accept one argument
+but also changes the parsing of it's arguments. For more information see
+[Command Parsing](#Command-Parsing).
+
+Other flags are:
+* `CommandFlags.UniqueName`: use if the name of the Command is unique
+* `CommandFlags.UniqueArgumentCount`: use if the argument count of this
+  Command is unique among Commands with the same name
+
+Note that `UniqueName` implies `UniqueArgumentCount` so you don't need to set both.
+
+There is also a flag `CommandFlags.None` but **don't** use this directly in the constructor,
+as you need to set priority in this case.
+
+###### Priority
+
+When no Command Flag applies to your Command `C`, that means that there is another Command `D`
+that has the same name and argument count as `C`.
+
+In this case, you need to distinguish these Commands with different priority.
+
+A higher priority means, that the Command will be considered sooner during invocation.\
+For more details about the invocatio see [this](#Invocation-Order).
+
+##### Providing a Handler to the Application
 
 Secondly you will need to provide a method which accepts your new Command argument in your Application.
 
@@ -410,11 +458,11 @@ class MyConnection : Connection<MyApplication, MyConnection>
 It is assumed that the Connection will be created by it's parent [Application](#Application),
 so the connected `TcpClient` is passed in the constructor.
 
-#### Adding a packet
+#### Adding a Packet
 
 In this example we'll add a simple packet carrying a string message.
 
-##### Creating the packet
+##### Creating a Packet
 
 First, you need to create the type holding the information
 you intend to send through the [Connection](#Connection).
@@ -460,12 +508,45 @@ class MyConnection : Connection<MyApplication, MyConnection>,
 }
 ```
 
+##### Sending a Packet
+
+Packets, unlike Commands, are sent by the user of this library.
+
+`IConnection` interface provides an `IReaderWriter<IPacket> Stream`
+for reading and writing Packets.
+
+So, in your Connection, you can send a Packet like this:
+
+```csharp
+// ...
+class MyConnection : Connection<MyApplication, MyConnection>,
+	IPacketHandler<MessagePacket>
+{
+	// ...
+	public void SendMessage(string message)
+	{
+		Stream.Write(new MessagePacket(message));
+	}
+}
+```
+
 ## Command Parsing
 
 When user of your application enters a line of text into the console,
-this line is treated as a sequence of [tokens](#Token) by the parser.
+this line is treated either as:
 
-The first of these tokens is treated as the [Command](#Command) name, the rest are command arguments.
+1) a sequence of [Tokens](#Token), or
+2) a Token and the "rest" (the remaining substring)
+
+An input that contains no Tokens is ingored.
+
+When [Command](#Command) has flag `OneLongArgument`,
+the input is treated as 2. The first token is the Command name
+and the remaining substring is the Command's only argument.
+
+If the [Command](#Command) doesn't have flag `OneLongArgument` set, 1.
+applies: the first of the tokens in the sequence is treated as the Command name,
+the rest are command arguments.
 
 The parser will find all commands with the entered name and argument count.
 
@@ -501,25 +582,29 @@ $ x example
 bad argument count: 1
 ```
 
+### Invocation Order
+
 If there are some Commands with the right name and argument count,
 they are invoked in descending order by their priority until
 a Command that doesn't cause an exception is found.\
 If there is no such Command, the last exception thrown propagates out of the parser.
 
-### Raw Token
+### Definitions
+
+#### Raw Token
 
 A contiguous subsequence of characters from the input containing no spaces not enclosed in quotes.
 
-### Token
+#### Token
 
 A [raw token](#Raw-Token) with removed quotes.
 
-### Formats
+#### Formats
 
 Here, '_' will mean a space character ' ' and 'A' will mean *not* a space character.\
 Expressions are in paretheses.
 
-#### Input Format
+##### Input Format
 
 input is:
 
@@ -533,7 +618,7 @@ or
 
 \_\*(raw_token)_+(input)
 
-#### Raw Token Formats
+##### Raw Token Formats
 
 raw_token is:
 
@@ -547,15 +632,25 @@ or
 
 A*".*
 
-### Example
+#### Example
 
 The input ' a ab" "c ' has tokens:\
 'a', 'ab c'
 
-## Demo project
+## Implementation Details
+
+[here](DETAILS)
+
+## Demo Project
 
 [PPchat](https://github.com/Petkr/PPchat) is a demo client-server project showcasing
 how to use this library.
+
+## Potential Improvements
+
+This library was split from the PPchat project after it was finished,
+so it may still carry some illogical design decisions stemming from originally
+only targetting one client-server application.
 
 ## License
 

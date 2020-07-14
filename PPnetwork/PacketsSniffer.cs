@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace PPnetwork
 {
-	class PacketsSniffer<Connection> : BasicSniffer<Type, IInvoker<IConnection, IPacket>, Connection>
+	class PacketsSniffer<Connection> : Sniffer<Type, IInvoker<IConnection, IPacket>, Connection>
 		where Connection : IConnection
 	{
 		public PacketsSniffer()
@@ -11,6 +11,6 @@ namespace PPnetwork
 		{ }
 
 		protected override void Handle(Type packetType)
-			=> Add(packetType, new BasicDescriptor<IConnection, IPacket, Connection>(typeof(IPacketHandler<>), packetType));
+			=> Add(packetType, new Descriptor<IConnection, IPacket, Connection>(typeof(IPacketHandler<>), packetType));
 	}
 }
