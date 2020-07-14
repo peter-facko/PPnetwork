@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace PPnetwork
 {
+	/// <summary>
+	/// Helper for Parsers. Can take an IEnumerable of Invokers
+	/// and act as an Invoker that invokes until successful.
+	/// </summary>
 	class EnumerableInvoker<Caller, Parameter> : IInvoker<Caller, Parameter>
 	{
 		readonly IEnumerable<IInvoker<Caller, Parameter>> Invokers;
@@ -12,6 +16,10 @@ namespace PPnetwork
 			Invokers = invokers;
 		}
 
+		/// <summary>
+		/// Invokes the elements in order, until an invocation doesn't throw.
+		/// If all throw, the last exception propagates out.
+		/// </summary>
 		public void Invoke(Caller caller, Parameter parameter)
 		{
 			Exception? last_exception = new Exception();

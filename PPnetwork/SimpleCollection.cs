@@ -3,6 +3,12 @@ using System.Collections.Generic;
 
 namespace PPnetwork
 {
+	/// <summary>
+	/// Simple implementation of <see cref="ISimpleCollection{T}"/>
+	/// that just forwards it's methods to the underlying <see cref="ICollection{}"/>.
+	/// </summary>
+	/// <typeparam name="Collection">The specific <see cref="ICollection{}"/> type.</typeparam>
+	/// <typeparam name="T">Element type.</typeparam>
 	class SimpleCollection<Collection, T> : ISimpleCollection<T>
 		where Collection : ICollection<T>, new()
 	{

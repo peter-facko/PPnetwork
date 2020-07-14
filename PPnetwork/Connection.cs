@@ -21,6 +21,7 @@ namespace PPnetwork
 		/// </summary>
 		public SpecificApplication Application { get; }
 		readonly TcpClient tcpClient;
+
 		/// <summary>
 		/// Stream that reads and writes packets into the connection.
 		/// </summary>

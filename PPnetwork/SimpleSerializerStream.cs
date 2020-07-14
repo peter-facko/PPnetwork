@@ -6,6 +6,9 @@ using System.Net;
 
 namespace PPnetwork
 {
+	/// <summary>
+	/// <see cref="Exception"/> for singalling the end of stream when using <see cref="SimpleSerializerStream"/>.
+	/// </summary>
 	public class SimpleSerializerEndOfStreamException : Exception
 	{ }
 
@@ -26,7 +29,6 @@ namespace PPnetwork
 
 		public void Dispose()
 			=> Stream.Dispose();
-
 
 
 		public T Read<T>() => ((IReader<T>)this).Read();

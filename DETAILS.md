@@ -107,7 +107,7 @@ class Descriptor<OrderHandlerBase, OrderBase, OrderHandler> : IInvoker<OrderHand
 	where OrderHandler : OrderHandlerBase
 {
 	// creates the Descriptor from the generic type of the OHI
-	// and the specific type of the order
+	// and the specific type of the Order
 	public Descriptor(Type genericOHIType, Type orderType);
 
 	// invokes the handler

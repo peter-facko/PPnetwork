@@ -19,13 +19,21 @@ namespace PPnetwork
 
 		protected override void Handle(Type orderType)
 		{
+			// The Command Argument types will be found by the base Sniffer,
+			// but are called directly, so no need to register them in the cache
 			if (orderType == typeof(NotFoundCommandArgument) ||
 				orderType == typeof(BadArgumentCountCommandArgument))
 				return;
 
 			var attribute = orderType.GetCustomAttribute<CommandAttribute>()!;
 			var argumentCount = attribute.HasOneLongArgument ? 0 : orderType.GetFields().Length;
-			var command = new CommandDescriptor<Application>(orderType, argumentCount, attribute.Priority);
+			ICommandDescriptor command = new CommandDescriptor<Application>(orderType, argumentCount, attribute.Priority);
+
+			// This is a very long section doing the optimizations allowed by CommandFlags
+			// For example, if a Command has a unique name,
+			// there is no need to store a whole collection of commands with such name that can have different argument counts,
+			// because the sniffer is told that there are none.
+			// All classes ending with CommandArgumentCountDictionary handle these special cases.
 
 			if (attribute.HasUniqueName)
 			{
@@ -69,6 +77,7 @@ namespace PPnetwork
 			}
 		}
 
+		// Because C# doesn't have return type covariance.
 		ICommandArgumentCountReadonlyDictionary? ISimpleReadonlyDictionary<ReadOnlyMemory<char>, ICommandArgumentCountReadonlyDictionary>.GetValue(ReadOnlyMemory<char> from)
 			=> GetValue(from);
 	}
