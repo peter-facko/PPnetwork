@@ -397,7 +397,7 @@ that has the same name and argument count as `C`.
 In this case, you need to distinguish these Commands with different priority.
 
 A higher priority means, that the Command will be considered sooner during invocation.\
-For more details about the invocatio see [this](#Invocation-Order).
+For more details about the invocation see [this](#Invocation-Order).
 
 ##### Providing a Handler to the Application
 
