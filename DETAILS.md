@@ -1,4 +1,4 @@
-# Implementation Details
+# PPnetwork - Implementation Details
 
 Here are explained the implementation details of the library.
 
