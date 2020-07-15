@@ -534,7 +534,7 @@ class MyConnection : Connection<MyApplication, MyConnection>,
 
 The library also offers a class for serialization of some types to Streams.
 
-The SimpleSerializerStream supports reading and writing these types to a Stream:
+The SimpleSerializerStream supports reading and writing of these types to a Stream:
 * `int`
 * `string`
 * `IPAddress`
@@ -550,7 +550,7 @@ When user of your application enters a line of text into the console,
 this line is treated either as:
 
 1) a sequence of [Tokens](#Token), or
-2) a Token and the "rest" (the remaining substring)
+2) the first Token and the "rest" (the remaining substring after the end of the first Token)
 
 An input that contains no Tokens is ingored.
 

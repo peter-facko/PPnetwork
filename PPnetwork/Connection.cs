@@ -26,7 +26,13 @@ namespace PPnetwork
 		/// Stream that reads and writes packets into the connection.
 		/// </summary>
 		public IReaderWriter<IPacket> Stream { get; }
+		/// <summary>
+		/// Each connection listens to incoming Packets on a separate thread.
+		/// </summary>
 		readonly Thread thread;
+		/// <summary>
+		/// To distinguish between intended and abrupt Connection close.
+		/// </summary>
 		bool should_close = false;
 
 		static readonly IInvoker<IConnection, IPacket> Parser = new PacketParser<ApplicationConnection>();
