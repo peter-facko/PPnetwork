@@ -16,7 +16,7 @@ namespace PPnetwork
 		where OrderHandler : OrderHandlerBase
 		where OrderBase : notnull
 	{
-		readonly ThreadLocal<object[]> objectArray = new ThreadLocal<object[]>(() => new object[1]);
+		static readonly ThreadLocal<object[]> objectArray = new ThreadLocal<object[]>(() => new object[1]);
 
 		readonly MethodInfo orderHandlerMethod;
 		/// <summary>
