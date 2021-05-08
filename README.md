@@ -653,7 +653,7 @@ The input ' a ab" "c ' has tokens:\
 
 ## Implementation Details
 
-[here](DETAILS)
+[here](DETAILS.md)
 
 ## Demo Project
 
